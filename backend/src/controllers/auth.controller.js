@@ -1,8 +1,22 @@
-exports.register = async (req, res) => {
+const authService = require("../services/auth.service");
+
+const register = async (req, res) => {
+  try {
+    const user = await authService.register(req.body);
 
     res.status(201).json({
-        success: true,
-        message: "Register API Working"
+      success: true,
+      message: "User registered successfully",
+      data: user,
     });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
+module.exports = {
+  register,
 };
