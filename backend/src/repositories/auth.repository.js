@@ -66,8 +66,27 @@ const createUser = async (userData) => {
   return result.rows[0];
 };
 
+const findUserForLogin = async (email) => {
+  const query = `
+    SELECT
+      id,
+      first_name,
+      last_name,
+      email,
+      password,
+      role_id
+    FROM users
+    WHERE email = $1;
+  `;
+
+  const result = await pool.query(query, [email]);
+
+  return result.rows[0];
+};
+
 module.exports = {
   findUserByEmail,
   findRoleByName,
   createUser,
+  findUserForLogin
 };

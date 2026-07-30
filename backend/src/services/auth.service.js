@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const authRepository = require("../repositories/auth.repository");
+const jwt = require("jsonwebtoken");
 
 const register = async (userData) => {
   // 1. Check if email already exists
@@ -29,6 +30,40 @@ const register = async (userData) => {
   return newUser;
 };
 
+const login = async (loginData) => {
+
+  const user = await authRepository.findUserForLogin(loginData.email);
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  const isPasswordValid = await bcrypt.compare(
+    loginData.password,
+    user.password
+  );
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      roleId: user.role_id,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1d",
+    }
+  );
+
+  return {
+    accessToken: token,
+  };
+};
+
 module.exports = {
   register,
+  login,
 };
