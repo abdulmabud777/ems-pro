@@ -1,20 +1,27 @@
 const bcrypt = require("bcrypt");
 const authRepository = require("../repositories/auth.repository");
 const jwt = require("jsonwebtoken");
+const AppError = require("../utils/AppError");
 
 const register = async (userData) => {
   // 1. Check if email already exists
   const existingUser = await authRepository.findUserByEmail(userData.email);
 
   if (existingUser) {
-    throw new Error("Email already exists");
+    throw new AppError(
+        "Email already exists",
+        409
+    );
   }
 
   // 2. Get EMPLOYEE role
   const employeeRole = await authRepository.findRoleByName("EMPLOYEE");
 
   if (!employeeRole) {
-    throw new Error("Employee role not found");
+    throw new AppError(
+        "Employee role not found",
+        404
+    );
   }
 
   // 3. Hash password
@@ -35,7 +42,10 @@ const login = async (loginData) => {
   const user = await authRepository.findUserForLogin(loginData.email);
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new AppError(
+        "Invalid email or password",
+        401
+    );
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -44,7 +54,10 @@ const login = async (loginData) => {
   );
 
   if (!isPasswordValid) {
-    throw new Error("Invalid email or password");
+    throw new AppError(
+        "Invalid email or password",
+        401
+    );
   }
 
   const token = jwt.sign(
