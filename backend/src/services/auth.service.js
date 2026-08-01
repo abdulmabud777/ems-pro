@@ -14,12 +14,12 @@ const register = async (userData) => {
     );
   }
 
-  // 2. Get EMPLOYEE role
-  const employeeRole = await authRepository.findRoleByName("EMPLOYEE");
+  // 2. Get ADMIN role
+  const adminRole = await authRepository.findRoleByName("ADMIN");
 
-  if (!employeeRole) {
+  if (!adminRole) {
     throw new AppError(
-        "Employee role not found",
+        "Admin role not found",
         404
     );
   }
@@ -31,7 +31,7 @@ const register = async (userData) => {
   const newUser = await authRepository.createUser({
     ...userData,
     password: hashedPassword,
-    roleId: employeeRole.id,
+    roleId: adminRole.id,
   });
 
   return newUser;

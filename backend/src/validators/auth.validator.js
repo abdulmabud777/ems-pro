@@ -1,15 +1,15 @@
 const { body } = require("express-validator");
 
 const registerValidation = [
-  body("firstName")
-    .trim()
-    .notEmpty()
-    .withMessage("First name is required"),
+  // body("firstName")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage("First name is required"),
 
-  body("lastName")
-    .trim()
-    .notEmpty()
-    .withMessage("Last name is required"),
+  // body("lastName")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage("Last name is required"),
 
   body("email")
     .isEmail()
