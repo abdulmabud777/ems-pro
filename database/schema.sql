@@ -1,3 +1,7 @@
+-- ==========================================
+-- ROLES
+-- ==========================================
+
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -5,90 +9,118 @@ CREATE TABLE roles (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ==========================================
+-- USERS (Authentication Only)
+-- ==========================================
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
 
-    first_name VARCHAR(100) NOT NULL,
-
-    last_name VARCHAR(100) NOT NULL,
-
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
 
     password VARCHAR(255) NOT NULL,
 
     role_id INTEGER NOT NULL,
 
-    is_active BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_role
-        FOREIGN KEY(role_id)
+    CONSTRAINT fk_users_role
+        FOREIGN KEY (role_id)
         REFERENCES roles(id)
 );
 
-CREATE TABLE departments (
+-- ==========================================
+-- DEPARTMENTS
+-- ==========================================
 
+CREATE TABLE departments (
     id SERIAL PRIMARY KEY,
 
-    name VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
 
     description TEXT,
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ==========================================
+-- DESIGNATIONS
+-- ==========================================
 
 CREATE TABLE designations (
-
     id SERIAL PRIMARY KEY,
 
-    name VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
 
     description TEXT,
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ==========================================
+-- EMPLOYEES
+-- ==========================================
 
 CREATE TABLE employees (
 
     id SERIAL PRIMARY KEY,
 
-    employee_code VARCHAR(20) UNIQUE NOT NULL,
+    user_id INTEGER NOT NULL UNIQUE,
+
+    employee_code VARCHAR(20) NOT NULL UNIQUE,
 
     first_name VARCHAR(100) NOT NULL,
 
     last_name VARCHAR(100) NOT NULL,
 
-    email VARCHAR(255) UNIQUE NOT NULL,
-
     phone VARCHAR(20),
 
-    salary NUMERIC(10,2),
+    gender VARCHAR(10),
 
-    joining_date DATE,
+    date_of_birth DATE,
 
-    department_id INTEGER,
+    salary NUMERIC(10,2)
+        CHECK (salary >= 0),
+
+    joining_date DATE NOT NULL,
+
+    department_id INTEGER NOT NULL,
+
+    designation_id INTEGER NOT NULL,
 
     manager_id INTEGER,
 
-    status VARCHAR(20) DEFAULT 'ACTIVE',
+    status VARCHAR(20)
+        NOT NULL
+        DEFAULT 'ACTIVE',
 
     photo VARCHAR(255),
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_department
-        FOREIGN KEY(department_id)
+    CONSTRAINT fk_employee_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    CONSTRAINT fk_employee_department
+        FOREIGN KEY (department_id)
         REFERENCES departments(id),
 
-    CONSTRAINT fk_manager
-        FOREIGN KEY(manager_id)
+    CONSTRAINT fk_employee_designation
+        FOREIGN KEY (designation_id)
+        REFERENCES designations(id),
+
+    CONSTRAINT fk_employee_manager
+        FOREIGN KEY (manager_id)
         REFERENCES employees(id)
 );

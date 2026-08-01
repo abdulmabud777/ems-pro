@@ -37,25 +37,19 @@ const createUser = async (userData) => {
   const query = `
     INSERT INTO users
     (
-      first_name,
-      last_name,
       email,
       password,
       role_id
     )
-    VALUES ($1, $2, $3, $4, $5)
+    VALUES ($1, $2, $3)
     RETURNING
       id,
-      first_name,
-      last_name,
       email,
       role_id,
       created_at;
   `;
 
   const values = [
-    userData.firstName,
-    userData.lastName,
     userData.email,
     userData.password,
     userData.roleId,
@@ -70,8 +64,6 @@ const findUserForLogin = async (email) => {
   const query = `
     SELECT
       id,
-      first_name,
-      last_name,
       email,
       password,
       role_id

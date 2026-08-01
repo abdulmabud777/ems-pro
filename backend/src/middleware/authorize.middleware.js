@@ -1,7 +1,8 @@
 const authorize = (allowedRoles) => {
-  return (req, res, next) => {
+  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
-    if (!allowedRoles.includes(req.user.roleId)) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.roleId)) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to perform this action",
